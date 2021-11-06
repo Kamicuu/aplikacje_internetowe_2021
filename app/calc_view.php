@@ -27,7 +27,7 @@ function zmienKalkulator() {
     <button onclick="zmienKalkulator()">Zmien kalkulator na klasyczny/kredytowy</button> 
     <br/>
     <br/>
-    <form action="<?php print(_APP_URL);?>/app/calc.php" method="post" id="klasyczny" style="display:block">
+    <form action="<?php print(_APP_URL);?>/app/calc.php" method="post" id="klasyczny" style="display:none">
             <label for="id_x">Liczba 1: </label>
             <input id="id_x" type="text" name="x" value="<?php print($x); ?>" /><br />
             <label for="id_op">Operacja: </label>
@@ -41,7 +41,7 @@ function zmienKalkulator() {
             <input id="id_y" type="text" name="y" value="<?php print($y); ?>" /><br />
             <input type="submit" value="Oblicz" />
     </form>
-    <form action="<?php print(_APP_URL);?>/app/calc_credit.php" method="post" id="kredytowy" style="display:none">
+    <form action="<?php print(_APP_URL);?>/app/calc_credit.php" method="post" id="kredytowy" style="display:block">
         <label>Kwota kredytu: </label>
         <input id="id_kwota" type="text" name="kwota" value="<?php print($kwota); ?>" /><br />
         <label>Oprocentowanie kredytu: </label>

@@ -8,6 +8,8 @@ require_once dirname(__FILE__).'/../config.php';
 
 // 1. pobranie parametrów
 
+include _ROOT_PATH.'/security/check.php';
+
 $kwota = $_REQUEST ['kwota'];
 $oprocentowanie = $_REQUEST ['oprocentowanie'];
 $czas_trwania = $_REQUEST ['czas_trwania'];
