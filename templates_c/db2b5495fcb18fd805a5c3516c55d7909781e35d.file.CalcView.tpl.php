@@ -1,4 +1,34 @@
-<!DOCTYPE html>
+<?php /* Smarty version Smarty-3.1.17, created on 2021-11-15 20:40:52
+         compiled from "C:\Users\Kamil\Documents\NetBeansProjects\aplikacje_sieciowe_2021\app\views\CalcView.tpl" */ ?>
+<?php /*%%SmartyHeaderCode:14816231516192c2e2193764-26888201%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    'db2b5495fcb18fd805a5c3516c55d7909781e35d' => 
+    array (
+      0 => 'C:\\Users\\Kamil\\Documents\\NetBeansProjects\\aplikacje_sieciowe_2021\\app\\views\\CalcView.tpl',
+      1 => 1637008848,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '14816231516192c2e2193764-26888201',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.17',
+  'unifunc' => 'content_6192c2e21d5045_24172182',
+  'variables' => 
+  array (
+    'res' => 0,
+    'conf' => 0,
+    'form' => 0,
+    'msgs' => 0,
+    'err' => 0,
+    'inf' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_6192c2e21d5045_24172182')) {function content_6192c2e21d5045_24172182($_smarty_tpl) {?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -62,9 +92,10 @@
 
   <header class="masthead text-center text-white">
     <div class="masthead-content">
-        {if isset($res->result)}
-	<h4 class="masthead-heading mb-0" >Wynik {$res->result}</h4>
-        {/if}
+        <?php if (isset($_smarty_tpl->tpl_vars['res']->value->result)) {?>
+	<h4 class="masthead-heading mb-0" >Wynik <?php echo $_smarty_tpl->tpl_vars['res']->value->result;?>
+</h4>
+        <?php }?>
     </div>
     <div class="bg-circle-1 bg-circle"></div>
     <div class="bg-circle-2 bg-circle"></div>
@@ -76,33 +107,42 @@
     <div class="container" id="main-content">
       <div class="row align-items-center">
         <div class="col-lg-6 order-lg-1" style="margin:auto">
-          <form class="form-group" action="{$conf->app_url}/app/calc_credit.php" method="post" id="kredytowy" style="display:block">
+          <form class="form-group" action="<?php echo $_smarty_tpl->tpl_vars['conf']->value->action_root;?>
+calcCreditCompute" method="post" id="kredytowy" style="display:block">
                 <label>Kwota kredytu: </label>
-                <input  class="form-control" id="kwota" type="text" name="kwota" value="{$form->kwota}" /><br />
+                <input  class="form-control" id="kwota" type="text" name="kwota" value="<?php echo $_smarty_tpl->tpl_vars['form']->value->kwota;?>
+" /><br />
                 <label>Oprocentowanie kredytu: </label>
-                <input  class="form-control" id="oprocentowanie" type="text" name="oprocentowanie" value="{$form->oprocentowanie}" /><br />
+                <input  class="form-control" id="oprocentowanie" type="text" name="oprocentowanie" value="<?php echo $_smarty_tpl->tpl_vars['form']->value->oprocentowanie;?>
+" /><br />
                 <label>Czas trwania kredytu (w latach): </label>
-                <input  class="form-control" id="czas_trwania" type="text" name="czas_trwania" value="{$form->czas_trwania}" /><br />
+                <input  class="form-control" id="czas_trwania" type="text" name="czas_trwania" value="<?php echo $_smarty_tpl->tpl_vars['form']->value->czas_trwania;?>
+" /><br />
 
                 <input  class="form-control" type="submit" value="Oblicz" />
             </form>
                 
-            <form class="form-group" action="{$conf->app_url}/app/calc.php" method="post" id="klasyczny" style="display:none">
+            <form class="form-group" action="<?php echo $_smarty_tpl->tpl_vars['conf']->value->action_root;?>
+calcCompute" method="post" id="klasyczny" style="display:none">
             <label  for="x">Liczba 1: </label>
-            <input class="form-control" id="x" type="text" name="x" value="{$form->x}" /><br />
+            <input class="form-control" id="x" type="text" name="x" value="<?php echo $_smarty_tpl->tpl_vars['form']->value->x;?>
+" /><br />
             <label for="op">Operacja: </label>
             <select class="form-control" name="op">
-                {if isset($res->op_name)}
-                <option value="{$form->op}">ponownie: {$res->op_name}</option>
+                <?php if (isset($_smarty_tpl->tpl_vars['res']->value->op_name)) {?>
+                <option value="<?php echo $_smarty_tpl->tpl_vars['form']->value->op;?>
+">ponownie: <?php echo $_smarty_tpl->tpl_vars['res']->value->op_name;?>
+</option>
                 <option value="" disabled="true">---</option>
-                {/if}
+                <?php }?>
                     <option value="plus">+</option>
                     <option value="minus">-</option>
                     <option value="times">*</option>
                     <option value="div">/</option>
             </select><br />
             <label for="y">Liczba 2: </label>
-            <input class="form-control" id="y" type="text" name="y" value="{$form->y}" /><br />
+            <input class="form-control" id="y" type="text" name="y" value="<?php echo $_smarty_tpl->tpl_vars['form']->value->y;?>
+" /><br />
             <input class="form-control" type="submit" value="Oblicz" />
         </form>
         </div>
@@ -114,29 +154,35 @@
     <div class="container">
       <div class="row align-items-center" style="margin-bottom: 30px;">
           <div class="col-lg-6 order-lg-1" style="margin:auto">
-        {* wyświeltenie listy błędów, jeśli istnieją *}
-        {if $msgs->isError()}
+        
+        <?php if ($_smarty_tpl->tpl_vars['msgs']->value->isError()) {?>
                 <h4>Wystąpiły błędy: </h4>
                 <ol class="err">
-                {foreach $msgs->getErrors() as $err}
-                {strip}
-                        <li>{$err}</li>
-                {/strip}
-                {/foreach}
+                <?php  $_smarty_tpl->tpl_vars['err'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['err']->_loop = false;
+ $_from = $_smarty_tpl->tpl_vars['msgs']->value->getErrors(); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
+foreach ($_from as $_smarty_tpl->tpl_vars['err']->key => $_smarty_tpl->tpl_vars['err']->value) {
+$_smarty_tpl->tpl_vars['err']->_loop = true;
+?>
+                <li><?php echo $_smarty_tpl->tpl_vars['err']->value;?>
+</li>
+                <?php } ?>
                 </ol>
-        {/if}
+        <?php }?>
 
-  {* wyświeltenie listy informacji, jeśli istnieją *}
-{if $msgs->isInfo()}
+  
+<?php if ($_smarty_tpl->tpl_vars['msgs']->value->isInfo()) {?>
 	<h4>Informacje: </h4>
 	<ol class="inf">
-	{foreach $msgs->getInfos() as $inf}
-	{strip}
-		<li>{$inf}</li>
-	{/strip}
-	{/foreach}
+	<?php  $_smarty_tpl->tpl_vars['inf'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['inf']->_loop = false;
+ $_from = $_smarty_tpl->tpl_vars['msgs']->value->getInfos(); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
+foreach ($_from as $_smarty_tpl->tpl_vars['inf']->key => $_smarty_tpl->tpl_vars['inf']->value) {
+$_smarty_tpl->tpl_vars['inf']->_loop = true;
+?>
+	<li><?php echo $_smarty_tpl->tpl_vars['inf']->value;?>
+</li>
+	<?php } ?>
 	</ol>
-{/if}
+<?php }?>
 
           </div>
       </div>
@@ -159,3 +205,4 @@
 </body>
 
 </html>
+<?php }} ?>

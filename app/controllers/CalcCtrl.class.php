@@ -1,35 +1,46 @@
 <?php
 
-require_once $conf->root_path.'/lib/smarty/Smarty.class.php';
-require_once $conf->root_path.'/lib/Messages.class.php';
-require_once $conf->root_path.'/app/CalcForm.class.php';
-require_once $conf->root_path.'/app/CalcResult.class.php';
+namespace app\controllers;
+
+// W skrypcie definicji kontrolera nie trzeba dołączać żadnego skryptu inicjalizacji.
+// Konfiguracja, Messages i Smarty są dostępne za pomocą odpowiednich funkcji.
+// Kontroler ładuje tylko to z czego sam korzysta.
+
+require_once 'CalcForm.class.php';
+require_once 'CalcResult.class.php';
+
+use app\forms\CalcForm;
+use app\transfer\CalcResult;
+
+/** Kontroler kalkulatora
+ * @author Przemysław Kudłacik
+ *
+ */
 
 class CalcCtrl {
+   
 
-	private $msgs;   //wiadomości dla widoku
 	private $form;   //dane formularza (do obliczeń i dla widoku)
 	private $result; //inne dane dla widoku
-	private $hide_intro; //zmienna informująca o tym czy schować intro
 
 	/** 
 	 * Konstruktor - inicjalizacja właściwości
 	 */
 	public function __construct(){
+            
 		//stworzenie potrzebnych obiektów
-		$this->msgs = new Messages();
 		$this->form = new CalcForm();
 		$this->result = new CalcResult();
-		$this->hide_intro = false;
 	}
 	
 	/** 
 	 * Pobranie parametrów
 	 */
 	public function getParams(){
-		$this->form->x = isset($_REQUEST ['x']) ? $_REQUEST ['x'] : null;
-		$this->form->y = isset($_REQUEST ['y']) ? $_REQUEST ['y'] : null;
-		$this->form->op = isset($_REQUEST ['op']) ? $_REQUEST ['op'] : null;
+            
+		$this->form->x = getFromRequest('x');
+		$this->form->y = getFromRequest('y');
+		$this->form->op = getFromRequest('op');
 	}
 	
 	/** 
@@ -37,51 +48,51 @@ class CalcCtrl {
 	 * @return true jeśli brak błedów, false w przeciwnym wypadku 
 	 */
 	public function validate() {
+            
 		// sprawdzenie, czy parametry zostały przekazane
 		if (! (isset ( $this->form->x ) && isset ( $this->form->y ) && isset ( $this->form->op ))) {
 			// sytuacja wystąpi kiedy np. kontroler zostanie wywołany bezpośrednio - nie z formularza
-			return false; //zakończ walidację z błędem
-		} else { 
-			$this->hide_intro = true; //przyszły pola formularza, więc - schowaj wstęp
+                    
+			return false;
 		}
 		
 		// sprawdzenie, czy potrzebne wartości zostały przekazane
 		if ($this->form->x == "") {
-			$this->msgs->addError('Nie podano liczby 1');
+			getMessages()->addError('Nie podano liczby 1');
 		}
 		if ($this->form->y == "") {
-			$this->msgs->addError('Nie podano liczby 2');
+			getMessages()->addError('Nie podano liczby 2');
 		}
 		
 		// nie ma sensu walidować dalej gdy brak parametrów
-		if (! $this->msgs->isError()) {
+		if (! getMessages()->isError()) {
 			
 			// sprawdzenie, czy $x i $y są liczbami całkowitymi
 			if (! is_numeric ( $this->form->x )) {
-				$this->msgs->addError('Pierwsza wartość nie jest liczbą całkowitą');
+				getMessages()->addError('Pierwsza wartość nie jest liczbą całkowitą');
 			}
 			
 			if (! is_numeric ( $this->form->y )) {
-				$this->msgs->addError('Druga wartość nie jest liczbą całkowitą');
+				getMessages()->addError('Druga wartość nie jest liczbą całkowitą');
 			}
 		}
 		
-		return ! $this->msgs->isError();
+		return ! getMessages()->isError();
 	}
 	
 	/** 
 	 * Pobranie wartości, walidacja, obliczenie i wyświetlenie
 	 */
-	public function process(){
+	public function action_calcCompute(){
 
-		$this->getparams();
-		
+		$this->getParams();
+                		
 		if ($this->validate()) {
 				
 			//konwersja parametrów na int
 			$this->form->x = intval($this->form->x);
 			$this->form->y = intval($this->form->y);
-			$this->msgs->addInfo('Parametry poprawne.');
+			getMessages()->addInfo('Parametry poprawne.');
 				
 			//wykonanie operacji
 			switch ($this->form->op) {
@@ -103,9 +114,14 @@ class CalcCtrl {
 					break;
 			}
 			
-			$this->msgs->addInfo('Wykonano obliczenia.');
+			getMessages()->addInfo('Wykonano obliczenia.');
 		}
 		
+		$this->generateView();
+	}
+	
+        public function action_calcShow(){
+		getMessages()->addInfo('Witaj w kalkulatorze');
 		$this->generateView();
 	}
 	
@@ -114,17 +130,16 @@ class CalcCtrl {
 	 * Wygenerowanie widoku
 	 */
 	public function generateView(){
-		global $conf;
+		//nie trzeba już tworzyć Smarty i przekazywać mu konfiguracji i messages
+		// - wszystko załatwia funkcja getSmarty()
 		
-		$smarty = new Smarty();
-		$smarty->assign('conf',$conf);
-	
-		$smarty->assign('hide_intro',$this->hide_intro);
+		getSmarty()->assign('page_title','Przykład 06a');
+		getSmarty()->assign('page_description','Aplikacja z jednym "punktem wejścia". Zmiana w postaci nowej struktury foderów, skryptu inicjalizacji oraz pomocniczych funkcji.');
+		getSmarty()->assign('page_header','Kontroler główny');
+					
+		getSmarty()->assign('form',$this->form);
+		getSmarty()->assign('res',$this->result);
 		
-		$smarty->assign('msgs',$this->msgs);
-		$smarty->assign('form',$this->form);
-		$smarty->assign('res',$this->result);
-		
-		$smarty->display($conf->root_path.'\app\CalcView.tpl');
+		getSmarty()->display('CalcView.tpl'); // już nie podajemy pełnej ścieżki - foldery widoków są zdefiniowane przy ładowaniu Smarty
 	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace app\controllers;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,10 +15,13 @@
  * 
  */
 
-require_once $conf->root_path.'/lib/smarty/Smarty.class.php';
-require_once $conf->root_path.'/lib/Messages.class.php';
-require_once $conf->root_path.'/app/CalcCreditForm.class.php';
-require_once $conf->root_path.'/app/CalcCreditResult.class.php';
+
+require_once 'CalcCreditForm.class.php';
+require_once 'CalcCreditResult.class.php';
+
+use app\forms\CalcCreditForm;
+use app\transfer\CalcCreditResult;
+
 
 class CalcCreditCtrl {
     
@@ -27,16 +32,14 @@ class CalcCreditCtrl {
     
         public function __construct(){
 		//stworzenie potrzebnych obiektów
-		$this->msgs = new Messages();
 		$this->form = new CalcCreditForm();
 		$this->result = new CalcCreditResult();
-		$this->hide_intro = false;
 	}
         
         function getParams(){
-            $this->form->kwota = isset($_REQUEST ['kwota']) ? $_REQUEST ['kwota'] : null;
-            $this->form->oprocentowanie = isset($_REQUEST ['oprocentowanie']) ? $_REQUEST ['oprocentowanie'] : null;
-            $this->form->czas_trwania = isset($_REQUEST ['czas_trwania']) ? $_REQUEST ['czas_trwania'] : null;
+            $this->form->kwota = getFromRequest('kwota');
+            $this->form->oprocentowanie = getFromRequest('oprocentowanie');
+            $this->form->czas_trwania = getFromRequest('czas_trwania');
             
         }
         
@@ -51,43 +54,45 @@ class CalcCreditCtrl {
 		
 		// sprawdzenie, czy potrzebne wartości zostały przekazane
 		if ($this->form->kwota == "") {
-			$this->msgs->addError('Nie podano kwoty kredytu');
+			getMessages()->addError('Nie podano kwoty kredytu');
 		}
 		if ($this->form->oprocentowanie == "") {
-			$this->msgs->addError('Nie podano oprocentowania');
+			getMessages()->addError('Nie podano oprocentowania');
 		}
                 if ($this->form->oprocentowanie == "") {
-			$this->czas_trwania->addError('Nie podano czasu trwania');
+			getMessages()->addError('Nie podano czasu trwania');
 		}
                 
 		
 		// nie ma sensu walidować dalej gdy brak parametrów
-		if (! $this->msgs->isError()) {
+		if (! getMessages()->isError()) {
 			
 			// sprawdzenie, czy $x i $y są liczbami całkowitymi
 			if (! is_numeric ( $this->form->kwota )) {
-				$this->msgs->addError('Kwota kredytu nie jest liczbą');
+				getMessages()->addError('Kwota kredytu nie jest liczbą');
 			}
 			
 			if (! is_numeric ( $this->form->oprocentowanie )) {
-				$this->msgs->addError('Oprocentowanie kredytu nie jest liczbą');
+				getMessages()->addError('Oprocentowanie kredytu nie jest liczbą');
 			}
                         
                         if (! is_numeric ( $this->form->czas_trwania )) {
-				$this->msgs->addError('Czas trwania nie jest liczba');
+				getMessages()->addError('Czas trwania nie jest liczba');
 			}
 		}
 		
-		return ! $this->msgs->isError();
+		return ! getMessages()->isError();
 	}
         
-        public function process(){
+        public function action_calcCreditCompute(){
 
 		$this->getParams();
 		
 		if ($this->validate()) {
+                    
+                    if (inRole('admin')){
 				
-			$this->msgs->addInfo('Parametry poprawne. Wykonuję obliczenia.');
+			getMessages()->addInfo('Parametry poprawne. Wykonuję obliczenia.');
                         
                         $this->form->czas_trwania = intval($this->form->czas_trwania);
                         $stala = 1 + (($this->form->oprocentowanie / 100.00)/12);
@@ -95,26 +100,22 @@ class CalcCreditCtrl {
                         $this->result->result = $this->form->kwota * pow($stala, $this->form->czas_trwania*12)*($stala-1)/(pow($stala, $this->form->czas_trwania*12)-1);
 				
 			
-			$this->msgs->addInfo('Wykonano obliczenia.');
+			getMessages()->addInfo('Wykonano obliczenia.');
+                     }else{
+                         getMessages()->addError('Tylko administrator może wykonać tę operację');
+                     }
 		}
 		
 		$this->generateView();
 	}
         
         public function generateView(){
-		global $conf;
-		
-                $smarty = new Smarty();
-                $smarty->assign('conf',$conf);
-                
-                $smarty->assign('hide_intro',$this->hide_intro);
-		
-		$smarty->assign('msgs',$this->msgs);
-		$smarty->assign('form',$this->form);
-		$smarty->assign('res',$this->result);
+
+		getSmarty()->assign('form',$this->form);
+		getSmarty()->assign('res',$this->result);
 
                 // 5. Wywołanie szablonu
-                $smarty->display($conf->root_path.'/app/CalcView.tpl');
+                getSmarty()->display('CalcView.tpl');
 	}
 
 }

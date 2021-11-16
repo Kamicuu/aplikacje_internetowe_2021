@@ -1,5 +1,5 @@
 <?php
-
+namespace app\transfer;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,12 +7,10 @@
  */
 
 /**
- * Description of CalcCreditForm
+ * Description of CalcCreditResult
  *
  * @author Kamil
  */
-class CalcCreditForm {
-    	public $kwota;
-	public $oprocentowanie;
-	public $czas_trwania;
+class CalcCreditResult {
+    public $result;	
 }
